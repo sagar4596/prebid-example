@@ -1,5 +1,5 @@
-import {expect} from 'chai';
-import {spec} from '../../../modules/docereeBidAdapter.js';
+import { expect } from 'chai';
+import { spec } from '../../../modules/docereeBidAdapter.js';
 import { config } from '../../../src/config.js';
 
 describe('BidlabBidAdapter', function () {
@@ -8,7 +8,7 @@ describe('BidlabBidAdapter', function () {
       context: {
         data: {
           token: 'testing-token', // required
-        }
+        },
       },
       user: {
         data: {
@@ -22,9 +22,9 @@ describe('BidlabBidAdapter', function () {
           city: '',
           zipCode: '',
           specialization: '',
-        }
-      }
-    }
+        },
+      },
+    },
   });
   let bid = {
     bidId: 'testing',
@@ -32,8 +32,9 @@ describe('BidlabBidAdapter', function () {
     params: {
       placementId: 'DOC_7jm9j5eqkl0xvc5w',
       gdpr: '1',
-      gdprConsent: 'CPQfU1jPQfU1jG0AAAENAwCAAAAAAAAAAAAAAAAAAAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g'
-    }
+      gdprConsent:
+        'CPQfU1jPQfU1jG0AAAENAwCAAAAAAAAAAAAAAAAAAAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g',
+    },
   };
 
   describe('isBidRequestValid', function () {
@@ -54,17 +55,19 @@ describe('BidlabBidAdapter', function () {
 
   describe('buildRequests', function () {
     let serverRequest = spec.buildRequests([bid]);
-    serverRequest = serverRequest[0]
+    serverRequest = serverRequest[0];
     it('Creates a ServerRequest object with method, URL and data', function () {
       expect(serverRequest).to.exist;
       expect(serverRequest.method).to.exist;
       expect(serverRequest.url).to.exist;
     });
     it('Returns GET method', function () {
-      expect(serverRequest.method).to.equal('GET');
+      expect(serverRequest.method).to.equal('POST');
     });
     it('Returns valid URL', function () {
-      expect(serverRequest.url).to.equal('https://bidder.doceree.com/v1/adrequest?id=DOC_7jm9j5eqkl0xvc5w&pubRequestedURL=undefined&loggedInUser=JTdCJTIyZ2VuZGVyJTIyJTNBJTIyJTIyJTJDJTIyZW1haWwlMjIlM0ElMjIlMjIlMkMlMjJoYXNoZWRFbWFpbCUyMiUzQSUyMiUyMiUyQyUyMmZpcnN0TmFtZSUyMiUzQSUyMiUyMiUyQyUyMmxhc3ROYW1lJTIyJTNBJTIyJTIyJTJDJTIybnBpJTIyJTNBJTIyJTIyJTJDJTIyaGFzaGVkTlBJJTIyJTNBJTIyJTIyJTJDJTIyY2l0eSUyMiUzQSUyMiUyMiUyQyUyMnppcENvZGUlMjIlM0ElMjIlMjIlMkMlMjJzcGVjaWFsaXphdGlvbiUyMiUzQSUyMiUyMiU3RA%3D%3D&prebidjs=true&requestId=testing&gdpr=1&gdpr_consent=CPQfU1jPQfU1jG0AAAENAwCAAAAAAAAAAAAAAAAAAAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g&');
+      expect(serverRequest.url).to.equal(
+        'https://qa-ad-test.doceree.com/drs/quest'
+      );
     });
   });
   describe('interpretResponse', function () {
@@ -82,14 +85,27 @@ describe('BidlabBidAdapter', function () {
           sourceURL: '',
           sourceHTML: '<div>test</div>',
           advertiserDomain: 'doceree.com',
-        }
+        },
       };
       let bannerResponses = spec.interpretResponse(banner);
       expect(bannerResponses).to.be.an('array').that.is.not.empty;
       let dataItem = bannerResponses[0];
-      expect(dataItem).to.have.all.keys('requestId', 'cpm', 'width', 'height', 'ad', 'ttl',
-        'netRevenue', 'currency', 'mediaType', 'creativeId', 'meta');
-      expect(dataItem.requestId).to.equal('G125fzC5NKl3FHeOT8yvL98ILfQS9TVUgk6Q');
+      expect(dataItem).to.have.all.keys(
+        'requestId',
+        'cpm',
+        'width',
+        'height',
+        'ad',
+        'ttl',
+        'netRevenue',
+        'currency',
+        'mediaType',
+        'creativeId',
+        'meta'
+      );
+      expect(dataItem.requestId).to.equal(
+        'G125fzC5NKl3FHeOT8yvL98ILfQS9TVUgk6Q'
+      );
       expect(dataItem.cpm).to.equal(2);
       expect(dataItem.width).to.equal(300);
       expect(dataItem.height).to.equal(250);
@@ -98,8 +114,9 @@ describe('BidlabBidAdapter', function () {
       expect(dataItem.netRevenue).to.be.true;
       expect(dataItem.currency).to.equal('USD');
       expect(dataItem.creativeId).to.equal('DOC_7jm9j5eqkl0xvc5w');
-      expect(dataItem.meta.advertiserDomains).to.be.an('array').that.is.not.empty;
-      expect(dataItem.meta.advertiserDomains[0]).to.equal('doceree.com')
+      expect(dataItem.meta.advertiserDomains).to.be.an('array').that.is.not
+        .empty;
+      expect(dataItem.meta.advertiserDomains[0]).to.equal('doceree.com');
     });
-  })
+  });
 });

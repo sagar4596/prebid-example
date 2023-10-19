@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Prebid.js Adapter Example</title>
+  </head>
+  <body>
+    <!-- Create a container for the winning ad -->
+    <div id="ad-container"></div>
+
+    <!-- Include Prebid.js library (replace with your own path) -->
+    <script src="./build/dev/prebid.js"></script>
+
+    <!-- Include your custom adapter script -->
+    <script type="modules" src="./modules/customAdapter.js"></script>
+
+    <script>
+      // Initialize Prebid.js
+      var pbjs = pbjs || {};
+      pbjs.que = pbjs.que || [];
+
+      // Define the Prebid.js ad unit configuration (use the data from customAdapterBidRequest.js)
+      var adUnits = [
+        {
+          code: "DOC-412-3", // Unique identifier for the ad unit
+          mediaTypes: {
+            banner: {
+              sizes: [
+                [300, 250],
+                [728, 90],
+              ], // Specify the ad sizes for banner ads
+            },
+          },
+          bids: [
+            {
+              bidder: "customAdapter", // Replace with the bidder code
+              params: {
+                // Specify bidder-specific parameters here
+                placementId: "DOC_7jm9j5eqkl0xvc5w", // Example placement ID
+              },
+            },
+
+            // Add more bid configurations for the same ad unit if needed
+          ],
+        },
+        {
+          code: "adunit-2",
+          mediaTypes: {
+            banner: {
+              sizes: [[320, 50]],
+            },
+          },
+          bids: [
+            {
+              bidder: "bidder-2",
+              params: {
+                // Specify bidder-specific parameters here
+                adUnitId: "7890", // Example ad unit ID
+              },
+            },
+            // Add more bid configurations for the same ad unit if needed
+          ],
+        },
+        // Add more ad units as necessary
+      ];
+
+      var pbjs = pbjs || {};
+      pbjs.que = pbjs.que || [];
+
+      pbjs.setBidderConfig({
+        bidders: ["customAdapter"],
+        config: {
+          customAdapter: {
+            context: {
+              data: {},
+            },
+            user: {
+              data: {
+                userid: "7d26d8ca-233a-46c2-9d36-7c5d261e151d",
+                email: "",
+                firstname: "RAYMOND",
+                lastname: "SCHONDELMEYER",
+                specialization: "Pediatrics",
+                hcpid: "",
+                gender: "Male",
+                city: "",
+                state: "",
+                zipcode: "65201",
+                hashedNPI: "",
+                pb: 1,
+                privacyConsent: 1,
+              },
+            },
+          },
+        },
+      });
+
+      pbjs.que.push(function () {
+        pbjs.addAdUnits(adUnits);
+        pbjs.requestBids({
+          bidsBackHandler: function (bidResponses) {
+            // Display ads
+            pbjs.setTargetingForGPTAsync();
+            googletag.pubads().refresh();
+          },
+        });
+      });
+
+      var googletag = googletag || {};
+      googletag.cmd = googletag.cmd || [];
+
+      googletag.cmd.push(function () {
+        var slot = googletag
+          .defineSlot(
+            "/1234567890/adunit-1",
+            [300, 250],
+            "div-gpt-ad-1234567890-0"
+          )
+          .addService(googletag.pubads());
+
+        pbjs.que.push(function () {
+          pbjs.setTargetingForGPTAsync();
+          googletag.pubads().refresh([slot]);
+        });
+
+        googletag.enableServices();
+      });
+    </script>
+
+    <div id="div-1">
+      <script type="text/javascript">
+        googletag.cmd.push(function () {
+          googletag.display("div-1");
+        });
+      </script>
+    </div>
+  </body>
+</html>
