@@ -102,12 +102,7 @@ describe('BidlabBidAdapter', function () {
         'currency',
         'mediaType',
         'creativeId',
-        'meta',
-        'bidderCode',
-        'dealId',
-        'vastUrl',
-        'vastImpUrl',
-        'vastXml'
+        'meta'
       );
       expect(dataItem.requestId).to.equal(
         'G125fzC5NKl3FHeOT8yvL98ILfQS9TVUgk6Q'

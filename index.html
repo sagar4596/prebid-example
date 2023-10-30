@@ -11,19 +11,19 @@
 
     <!-- Include Prebid.js library (replace with your own path) -->
     <script src="./build/dev/prebid.js"></script>
+    <script
+      async
+      src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
+    ></script>
 
     <!-- Include your custom adapter script -->
     <script type="modules" src="./modules/customAdapter.js"></script>
 
     <script>
-      // Initialize Prebid.js
-      var pbjs = pbjs || {};
-      pbjs.que = pbjs.que || [];
-
       // Define the Prebid.js ad unit configuration (use the data from customAdapterBidRequest.js)
       var adUnits = [
         {
-          code: "DOC-412-3", // Unique identifier for the ad unit
+          code: "/19968336/header-bid-tag-0", // Unique identifier for the ad unit
           mediaTypes: {
             banner: {
               sizes: [
@@ -96,34 +96,50 @@
         },
       });
 
+      pbjs.setConfig({
+        debug: true,
+        // Other configuration options
+      });
+
+      var PREBID_TIMEOUT = 1000;
+      var FAILSAFE_TIMEOUT = 3000;
+
+      window.googletag = window.googletag || { cmd: [] };
+      googletag.cmd.push(function () {
+        googletag.pubads().disableInitialLoad();
+      });
+
+      var pbjs = pbjs || {};
+      pbjs.que = pbjs.que || [];
+
       pbjs.que.push(function () {
         pbjs.addAdUnits(adUnits);
         pbjs.requestBids({
-          bidsBackHandler: function (bidResponses) {
-            // Display ads
-            pbjs.setTargetingForGPTAsync();
-            googletag.pubads().refresh();
-          },
+          bidsBackHandler: initAdserver,
+          timeout: PREBID_TIMEOUT,
         });
       });
 
-      var googletag = googletag || {};
-      googletag.cmd = googletag.cmd || [];
+      function initAdserver() {
+        if (pbjs.initAdserverSet) return;
+        pbjs.initAdserverSet = true;
+        googletag.cmd.push(function () {
+          pbjs.que.push(function () {
+            pbjs.setTargetingForGPTAsync();
+            googletag.pubads().refresh();
+          });
+        });
+      }
+      // in case PBJS doesn't load
+      setTimeout(function () {
+        initAdserver();
+      }, FAILSAFE_TIMEOUT);
 
       googletag.cmd.push(function () {
-        var slot = googletag
-          .defineSlot(
-            "/1234567890/adunit-1",
-            [300, 250],
-            "div-gpt-ad-1234567890-0"
-          )
+        googletag
+          .defineSlot("/19968336/header-bid-tag-0", [300, 250], "div-1")
           .addService(googletag.pubads());
-
-        pbjs.que.push(function () {
-          pbjs.setTargetingForGPTAsync();
-          googletag.pubads().refresh([slot]);
-        });
-
+        googletag.pubads().enableSingleRequest();
         googletag.enableServices();
       });
     </script>
