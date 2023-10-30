@@ -1,26 +1,26 @@
 import { expect } from 'chai';
-import { spec } from '../../../modules/docereeBidAdapter.js';
+import { spec } from '../../../modules/customAdapter.js';
 import { config } from '../../../src/config.js';
 
-describe('BidlabBidAdapter', function () {
+describe('customAdapter', function () {
   config.setConfig({
     doceree: {
-      context: {
-        data: {
-          token: 'testing-token', // required
-        },
-      },
       user: {
         data: {
           userid: '',
           email: '',
+          firstName: '',
           lastName: '',
-          mobile: '',
           specialization: '',
           hcpid: '',
-          dob: '',
           gender: '',
-          adunit: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          hashedNPI: '',
+          mobile: '',
+          pb: '',
+          privacyConsent: '',
         },
       },
     },
@@ -60,14 +60,13 @@ describe('BidlabBidAdapter', function () {
       expect(serverRequest.method).to.exist;
       expect(serverRequest.url).to.exist;
       expect(serverRequest.data).to.exist;
-      expect(serverRequest.options).to.exist;
     });
     it('Returns POST method', function () {
       expect(serverRequest.method).to.equal('POST');
     });
     it('Returns valid URL', function () {
       expect(serverRequest.url).to.equal(
-        'https://qa-ad-test.doceree.com/drs/quest'
+        'https://prebidexample.sagargolait.repl.co'
       );
     });
   });
@@ -75,17 +74,21 @@ describe('BidlabBidAdapter', function () {
     it('Should interpret banner response', function () {
       const banner = {
         body: {
-          DIVID: 'DOC_7jm9j5eqkl0xvc5w',
-          creativeType: 'banner',
-          guid: 'G125fzC5NKl3FHeOT8yvL98ILfQS9TVUgk6Q',
+          cpm: 3.576,
           currency: 'USD',
-          cpmBid: 2,
-          height: '250',
-          width: '300',
-          ctaLink: 'https://doceree.com/',
-          sourceURL: '',
-          sourceHTML: '<div>test</div>',
-          advertiserDomain: 'doceree.com',
+          width: 250,
+          height: 300,
+          ad: '<html><h3>I am an ad</h3></html>',
+          ttl: 30,
+          creativeId: 'div-1',
+          netRevenue: false,
+          bidderCode: '123',
+          dealId: 232,
+          requestId: '123',
+          meta: {
+            brandId: null,
+            advertiserDomains: ['https://prebidexample.sagargolait.repl.co'],
+          },
         },
       };
       let bannerResponses = spec.interpretResponse(banner);
@@ -104,20 +107,17 @@ describe('BidlabBidAdapter', function () {
         'creativeId',
         'meta'
       );
-      expect(dataItem.requestId).to.equal(
-        'G125fzC5NKl3FHeOT8yvL98ILfQS9TVUgk6Q'
-      );
-      expect(dataItem.cpm).to.equal(2);
-      expect(dataItem.width).to.equal(300);
-      expect(dataItem.height).to.equal(250);
-      expect(dataItem.ad).to.equal('<div>test</div>');
+      expect(dataItem.requestId).to.equal('123');
+      expect(dataItem.cpm).to.equal(3.576);
+      expect(dataItem.width).to.equal(250);
+      expect(dataItem.height).to.equal(300);
+      expect(dataItem.ad).to.equal('<html><h3>I am an ad</h3></html>');
       expect(dataItem.ttl).to.equal(30);
       expect(dataItem.netRevenue).to.be.true;
       expect(dataItem.currency).to.equal('USD');
-      expect(dataItem.creativeId).to.equal('DOC_7jm9j5eqkl0xvc5w');
+      expect(dataItem.creativeId).to.equal('div-1');
       expect(dataItem.meta.advertiserDomains).to.be.an('array').that.is.not
         .empty;
-      expect(dataItem.meta.advertiserDomains[0]).to.equal('doceree.com');
     });
   });
 });

@@ -1,14 +1,14 @@
 # Overview
 
 ```
-Module Name: Doceree Bidder Adapter
+Module Name: Custom Bidder Adapter
 Module Type: Bidder Adapter
-Maintainer: sourbh.gupta@doceree.com
+Maintainer: tech.stack@doceree.com
 ```
 
 <!-- # Description -->
 Connects to Doceree demand source to fetch bids.  
-Please use ```doceree``` as the bidder code. 
+Please use ```customAdapter``` as the bidder code. 
 
 
 # Test Parameters
